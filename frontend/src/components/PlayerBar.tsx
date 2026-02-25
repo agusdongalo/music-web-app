@@ -14,7 +14,7 @@ export default function PlayerBar() {
         </div>
       </div>
       <button
-        className="player-toggle"
+        className="player-toggle button-primary"
         onClick={() => setPlaying(!isPlaying)}
       >
         {isPlaying ? "Pause" : "Play"}

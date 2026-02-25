@@ -13,7 +13,7 @@ export default function TrackRow({
 }: TrackRowProps) {
   return (
     <div className="track-row">
-      <button className="track-row-play" onClick={onPlay}>
+      <button className="track-row-play button-primary" onClick={onPlay}>
         Play
       </button>
       <div className="track-row-meta">
