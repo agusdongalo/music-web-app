@@ -9,6 +9,7 @@ import searchRouter from "./routes/search";
 import meRouter from "./routes/me";
 import { errorHandler, notFound } from "./middleware/error";
 import { env } from "./env";
+import { prisma } from "./lib/prisma";
 
 const app = express();
 
@@ -22,7 +23,30 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.get("/health", (_req, res) => res.json({ ok: true }));
+app.get("/health", async (_req, res, next) => {
+  const start = Date.now();
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    const latencyMs = Date.now() - start;
+    res.json({
+      ok: true,
+      db: { status: "up", latencyMs },
+      uptimeSec: Math.round(process.uptime()),
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+app.get("/health/db", async (_req, res, next) => {
+  const start = Date.now();
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    const latencyMs = Date.now() - start;
+    res.json({ ok: true, db: "up", latencyMs });
+  } catch (err) {
+    next(err);
+  }
+});
 
 app.use("/auth", authRouter);
 app.use("/artists", artistRouter);

@@ -1,17 +1,144 @@
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { apiFetch } from "../api/client";
 import ArtistHeader from "../components/ArtistHeader";
 import TrackRow from "../components/TrackRow";
+import { usePlayerStore } from "../store/playerStore";
+import { formatDuration } from "../utils/format";
+
+type Artist = {
+  id: string;
+  name: string;
+  bio?: string | null;
+  imageUrl?: string | null;
+  albums: Array<{ id: string; title: string; coverUrl?: string | null }>;
+  tracks: Array<{
+    id: string;
+    title: string;
+    durationSec: number;
+    audioUrl: string;
+    coverUrl?: string | null;
+  }>;
+};
 
 export default function ArtistPage() {
+  const { id } = useParams();
+  const [artist, setArtist] = useState<Artist | null>(null);
+  const [status, setStatus] = useState<"idle" | "loading" | "error">(
+    "loading"
+  );
+  const [error, setError] = useState<string | null>(null);
+  const { setTrack, setPlaying } = usePlayerStore();
+
+  useEffect(() => {
+    if (!id) {
+      setStatus("error");
+      setError("Missing artist id");
+      return;
+    }
+
+    let active = true;
+    setStatus("loading");
+    apiFetch<Artist>(`/artists/${id}`)
+      .then((data) => {
+        if (!active) {
+          return;
+        }
+        setArtist(data);
+        setStatus("idle");
+      })
+      .catch((err: Error) => {
+        if (!active) {
+          return;
+        }
+        setError(err.message);
+        setStatus("error");
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [id]);
+
+  const handlePlay = (track: Artist["tracks"][number]) => {
+    setTrack({
+      id: track.id,
+      title: track.title,
+      artistName: artist?.name,
+      audioUrl: track.audioUrl,
+      durationSec: track.durationSec,
+      coverUrl: track.coverUrl ?? undefined,
+    });
+    setPlaying(true);
+  };
+
+  if (status === "loading") {
+    return (
+      <section className="page-section">
+        <p className="section-subtitle">Loading artist...</p>
+      </section>
+    );
+  }
+
+  if (status === "error" || !artist) {
+    return (
+      <section className="page-section">
+        <p className="section-subtitle">{error ?? "Artist not found"}</p>
+      </section>
+    );
+  }
+
   return (
-    <section>
+    <section className="page-section">
       <ArtistHeader
-        name="Midnight Echoes"
-        bio="Dreamy synth-pop with cinematic textures."
-        imageUrl="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f"
+        name={artist.name}
+        bio={artist.bio ?? undefined}
+        imageUrl={artist.imageUrl ?? undefined}
       />
       <div>
         <h3>Popular</h3>
-        <TrackRow title="City Skyline" artist="Midnight Echoes" duration="3:35" />
+        {artist.tracks.map((track) => (
+          <TrackRow
+            key={track.id}
+            title={track.title}
+            artist={artist.name}
+            duration={formatDuration(track.durationSec)}
+            onPlay={() => handlePlay(track)}
+          />
+        ))}
+      </div>
+
+      <div className="page-section">
+        <div className="section-header">
+          <div>
+            <h2>Albums</h2>
+            <p className="section-subtitle">Latest releases.</p>
+          </div>
+        </div>
+        <div className="collection-grid">
+          {artist.albums.map((album, index) => (
+            <a
+              key={album.id}
+              className="collection-card"
+              href={`/album/${album.id}`}
+            >
+              <div
+                className={`collection-art tone-${index + 1}`}
+                style={
+                  album.coverUrl
+                    ? {
+                        backgroundImage: `url(${album.coverUrl})`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                      }
+                    : undefined
+                }
+              />
+              <div className="collection-title">{album.title}</div>
+              <div className="collection-meta">Album</div>
+            </a>
+          ))}
+        </div>
       </div>
     </section>
   );

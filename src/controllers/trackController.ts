@@ -1,4 +1,4 @@
-import { NextFunction, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { prisma } from "../lib/prisma";
 import { AuthRequest } from "../middleware/auth";
 
@@ -21,6 +21,29 @@ export async function getTrackById(
     }
 
     res.json(track);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function getTracks(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const limitParam = Number(req.query.limit ?? 12);
+    const limit = Number.isFinite(limitParam)
+      ? Math.min(Math.max(limitParam, 1), 50)
+      : 12;
+
+    const tracks = await prisma.track.findMany({
+      include: { artist: true, album: true },
+      orderBy: { createdAt: "desc" },
+      take: limit,
+    });
+
+    res.json(tracks);
   } catch (err) {
     next(err);
   }

@@ -4,11 +4,16 @@ import {
   addTrack,
   createNewPlaylist,
   getMyPlaylists,
+  getPublicPlaylistById,
+  getPublicPlaylists,
   getPlaylistById,
   removeTrack,
 } from "../controllers/playlistController";
 
 const router = Router();
+
+router.get("/public", getPublicPlaylists);
+router.get("/public/:id", getPublicPlaylistById);
 
 router.use(requireAuth);
 

@@ -3,6 +3,7 @@ import "./app.css";
 import Sidebar from "../components/Sidebar";
 import TopBar from "../components/TopBar";
 import PlayerBar from "../components/PlayerBar";
+import NowPlayingPanel from "../components/NowPlayingPanel";
 import HomePage from "../pages/Home";
 import SearchPage from "../pages/Search";
 import ArtistPage from "../pages/Artist";
@@ -32,6 +33,7 @@ export default function App() {
             </Routes>
           </div>
         </div>
+        <NowPlayingPanel />
       </div>
       <PlayerBar />
     </BrowserRouter>
