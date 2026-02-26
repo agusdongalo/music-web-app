@@ -10,8 +10,8 @@
   --text-primary: #f4f4fa;
   --text-secondary: #c3c6d6;
   --text-muted: #8c91a7;
-  --surface: rgba(16, 17, 26, 0.92);
-  --surface-strong: #161826;
+  --surface: rgba(18, 18, 20, 0.92);
+  --surface-strong: #191a22;
   --border-subtle: rgba(255, 255, 255, 0.08);
   --glow: 0 0 24px rgba(255, 31, 183, 0.45);
   --radius-lg: 18px;
@@ -86,10 +86,33 @@ button {
 
 .app-shell {
   display: grid;
-  grid-template-columns: 260px minmax(0, 1fr) 300px;
+  grid-template-columns: 280px minmax(0, 1fr) 320px;
+  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-areas:
+    "topbar topbar topbar"
+    "sidebar main now";
   gap: 16px;
-  padding: 18px 18px 96px;
-  min-height: calc(100vh - 84px);
+  padding: 12px 12px 84px;
+  min-height: 100vh;
+  height: 100vh;
+}
+
+.topbar {
+  grid-area: topbar;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sidebar {
+  grid-area: sidebar;
+}
+
+.app-main {
+  grid-area: main;
+}
+
+.now-panel {
+  grid-area: now;
 }
 
 .sidebar,
@@ -102,6 +125,39 @@ button {
   flex-direction: column;
   gap: 18px;
   backdrop-filter: blur(20px);
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.library-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.library-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.library-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.library-tools {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.library-tools .text-button {
+  font-size: 13px;
 }
 
 .app-main {
@@ -121,6 +177,50 @@ button {
   flex-direction: column;
   gap: 24px;
   overflow: auto;
+  min-height: 0;
+  overscroll-behavior: contain;
+}
+
+.sidebar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 31, 183, 0.6) transparent;
+}
+
+.app-content {
+  scrollbar-width: auto;
+  scrollbar-color: rgba(255, 125, 210, 0.85) transparent;
+}
+
+.now-panel {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.35) transparent;
+}
+
+.sidebar::-webkit-scrollbar,
+.app-content::-webkit-scrollbar,
+.now-panel::-webkit-scrollbar {
+  width: 10px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(255, 31, 183, 0.7), transparent);
+  border-radius: 999px;
+}
+
+.app-content::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(255, 125, 210, 0.95), transparent);
+  border-radius: 999px;
+}
+
+.now-panel::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.4), transparent);
+  border-radius: 999px;
+}
+
+.sidebar::-webkit-scrollbar-track,
+.app-content::-webkit-scrollbar-track,
+.now-panel::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 .sidebar-header {
@@ -178,7 +278,7 @@ button {
 .sidebar-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .sidebar-item {
@@ -188,7 +288,7 @@ button {
   padding: 10px;
   border-radius: var(--radius-md);
   border: 1px solid transparent;
-  background: #131421;
+  background: rgba(255, 255, 255, 0.03);
   transition: all 0.2s ease;
   text-align: left;
 }
@@ -200,9 +300,9 @@ button {
 }
 
 .item-cover {
-  width: 46px;
-  height: 46px;
-  border-radius: var(--radius-sm);
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
   background: linear-gradient(
     135deg,
     rgba(255, 31, 183, 0.7),
@@ -211,6 +311,7 @@ button {
   display: grid;
   place-items: center;
   font-weight: 700;
+  font-size: 12px;
 }
 
 .item-cover.liked {
@@ -236,43 +337,67 @@ button {
 }
 
 .topbar {
-  padding: 18px 24px;
-  border-bottom: 1px solid var(--border-subtle);
+  padding: 12px 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 18px;
-  background: linear-gradient(
-    90deg,
-    rgba(255, 31, 183, 0.12),
-    transparent 60%
-  );
+  gap: 16px;
+  background: #0f0f12;
 }
 
 .topbar-left {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
   flex: 1;
 }
 
 .topbar-nav {
   display: flex;
   gap: 8px;
+  align-items: center;
 }
 
 .search-field {
   flex: 1;
-  max-width: 420px;
+  max-width: 520px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: #1a1b22;
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .search-field input {
   width: 100%;
-  border-radius: 999px;
-  border: 1px solid var(--border-subtle);
-  padding: 10px 16px;
-  background: #11121e;
+  border: none;
+  outline: none;
+  padding: 2px 0;
+  background: transparent;
   color: var(--text-primary);
+}
+
+.search-icon {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  position: relative;
+}
+
+.search-icon::after {
+  content: "";
+  position: absolute;
+  width: 7px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.6);
+  right: -6px;
+  bottom: -3px;
+  transform: rotate(45deg);
+  border-radius: 999px;
 }
 
 .topbar-actions {
@@ -282,21 +407,38 @@ button {
 }
 
 .icon-button {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border-radius: 999px;
   border: 1px solid var(--border-subtle);
   display: grid;
   place-items: center;
   background: #141624;
   color: var(--text-secondary);
+  font-size: 12px;
   transition: all 0.2s ease;
 }
 
 .icon-button:hover {
-  color: var(--neon-magenta);
-  border-color: rgba(255, 31, 183, 0.6);
-  box-shadow: var(--glow);
+  color: var(--text-primary);
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: none;
+}
+
+.icon-button.ghost {
+  border-color: transparent;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.home-button {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #f6f6f6;
+  color: #0b0b10;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
 }
 
 .button-primary {
@@ -307,6 +449,14 @@ button {
   font-weight: 600;
   box-shadow: var(--glow);
   transition: transform 0.2s ease;
+}
+
+.button-pill {
+  background: #f4f4f4;
+  color: #0b0b10;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-weight: 600;
 }
 
 .button-primary:hover {
@@ -363,6 +513,11 @@ button {
   gap: 16px;
 }
 
+.hero-section {
+  gap: 0;
+}
+
+
 .filter-row {
   display: flex;
   gap: 8px;
@@ -372,17 +527,17 @@ button {
 .hero-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  gap: 10px;
 }
 
 .hero-card {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px;
+  padding: 10px 12px;
   border-radius: var(--radius-md);
-  border: 1px solid var(--border-subtle);
-  background: #141523;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.25);
   transition: all 0.2s ease;
   text-align: left;
   width: 100%;
@@ -430,6 +585,10 @@ button {
   gap: 12px;
 }
 
+.section-header.compact {
+  align-items: center;
+}
+
 .section-header h2 {
   margin: 0;
   font-family: "Space Grotesk", sans-serif;
@@ -443,15 +602,15 @@ button {
 
 .collection-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 16px;
 }
 
 .collection-card {
-  background: #141523;
+  background: #16161c;
   border-radius: var(--radius-md);
-  border: 1px solid var(--border-subtle);
-  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 10px;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -561,19 +720,46 @@ button {
 }
 
 .now-panel {
-  gap: 20px;
+  gap: 16px;
 }
 
 .now-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 10px;
+}
+
+.now-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.now-header-badge {
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.12);
+  display: grid;
+  place-items: center;
+  font-size: 10px;
+}
+
+.now-header-title {
+  font-weight: 600;
+}
+
+.now-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .now-card {
-  background: #141523;
+  background: #1a1a20;
   border-radius: var(--radius-md);
-  border: 1px solid var(--border-subtle);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   padding: 14px;
   display: flex;
   flex-direction: column;
@@ -581,9 +767,9 @@ button {
 }
 
 .now-art {
-  height: 220px;
+  height: 260px;
   border-radius: var(--radius-md);
-  background: linear-gradient(135deg, #ff1fb7, #2f1c36);
+  background: linear-gradient(135deg, #9a5cff, #2a1a35);
 }
 
 .now-info h3 {
@@ -598,8 +784,9 @@ button {
 
 .now-actions {
   display: flex;
-  flex-wrap: wrap;
+  align-items: center;
   gap: 8px;
+  justify-content: flex-end;
 }
 
 .now-about,
@@ -617,9 +804,9 @@ button {
 }
 
 .about-card {
-  background: #141523;
+  background: #1a1a20;
   border-radius: var(--radius-md);
-  border: 1px solid var(--border-subtle);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   padding: 12px;
   display: grid;
   gap: 10px;
@@ -675,13 +862,13 @@ button {
   left: 0;
   right: 0;
   height: 84px;
-  background: rgba(8, 8, 12, 0.92);
-  border-top: 1px solid var(--border-subtle);
+  background: rgba(10, 10, 12, 0.96);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
   display: grid;
   grid-template-columns: 1.2fr 1.6fr 1.2fr;
   gap: 16px;
   align-items: center;
-  padding: 0 24px;
+  padding: 0 20px;
   z-index: 20;
   backdrop-filter: blur(18px);
 }
@@ -717,12 +904,15 @@ button {
 
 .player-buttons {
   display: flex;
-  gap: 12px;
+  gap: 10px;
   align-items: center;
 }
 
 .player-toggle {
-  min-width: 90px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  padding: 0;
 }
 
 .player-progress {
@@ -818,10 +1008,17 @@ button {
 @media (max-width: 1200px) {
   .app-shell {
     grid-template-columns: 240px minmax(0, 1fr);
+    grid-template-areas:
+      "topbar topbar"
+      "sidebar main";
   }
 
   .now-panel {
     display: none;
+  }
+
+  .collection-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
@@ -829,11 +1026,23 @@ button {
   .app-shell {
     display: flex;
     flex-direction: column;
+    height: auto;
+    min-height: auto;
   }
 
   .sidebar,
   .app-main {
     width: 100%;
+  }
+
+  .sidebar,
+  .now-panel,
+  .app-content {
+    overflow: visible;
+  }
+
+  .collection-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -856,6 +1065,10 @@ button {
   }
 
   .hero-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .collection-grid {
     grid-template-columns: 1fr;
   }
 

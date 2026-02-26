@@ -18,18 +18,25 @@ export default function PlayerBar() {
       </div>
       <div className="player-controls">
         <div className="player-buttons">
-          <button className="icon-button" type="button">
-            Prev
+          <button className="icon-button ghost" type="button" aria-label="Shuffle">
+            S
+          </button>
+          <button className="icon-button ghost" type="button" aria-label="Previous">
+            {"<<"}
           </button>
           <button
             className="player-toggle button-primary"
             onClick={() => setPlaying(!isPlaying)}
             type="button"
+            aria-label={isPlaying ? "Pause" : "Play"}
           >
-            {isPlaying ? "Pause" : "Play"}
+            {isPlaying ? "||" : ">"}
           </button>
-          <button className="icon-button" type="button">
-            Next
+          <button className="icon-button ghost" type="button" aria-label="Next">
+            {">>"}
+          </button>
+          <button className="icon-button ghost" type="button" aria-label="Repeat">
+            R
           </button>
         </div>
         <div className="player-progress">
@@ -41,8 +48,14 @@ export default function PlayerBar() {
         </div>
       </div>
       <div className="player-extras">
-        <button className="icon-button" type="button">
-          Queue
+        <button className="icon-button ghost" type="button" aria-label="Lyrics">
+          L
+        </button>
+        <button className="icon-button ghost" type="button" aria-label="Queue">
+          Q
+        </button>
+        <button className="icon-button ghost" type="button" aria-label="Devices">
+          D
         </button>
         <div className="volume-bar">
           <div className="volume-fill" />

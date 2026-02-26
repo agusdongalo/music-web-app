@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+ï»¿import { useEffect, useState } from "react";
 import { apiFetch } from "../api/client";
 import { usePlayerStore } from "../store/playerStore";
 import { formatDuration } from "../utils/format";
@@ -92,7 +92,7 @@ export default function HomePage() {
 
   return (
     <>
-      <section className="page-section">
+      <section className="page-section hero-section">
         <div className="filter-row">
           <button className="chip is-active" type="button">
             All
@@ -130,7 +130,7 @@ export default function HomePage() {
                 <div>
                   <div className="hero-title">{track.title}</div>
                   <div className="hero-subtitle">
-                    {track.artist?.name ?? "Unknown"} · {formatDuration(
+                    {track.artist?.name ?? "Unknown"} Â· {formatDuration(
                       track.durationSec
                     )}
                   </div>
@@ -142,9 +142,10 @@ export default function HomePage() {
       </section>
 
       <section className="page-section">
-        <div className="section-header">
+        <div className="section-header compact">
           <div>
-            <h2>Made for you</h2>
+            <span className="section-label">Made for</span>
+            <h2>donlicioso</h2>
             <p className="section-subtitle">
               Fresh picks tuned to your midnight rotation.
             </p>
@@ -214,7 +215,7 @@ export default function HomePage() {
               <div className="collection-meta">
                 {playlist.user?.displayName ?? "Community"}
                 {playlist._count?.items
-                  ? ` · ${playlist._count.items} tracks`
+                  ? ` Â· ${playlist._count.items} tracks`
                   : ""}
               </div>
             </a>

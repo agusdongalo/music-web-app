@@ -1,4 +1,4 @@
-const libraryItems = [
+﻿const libraryItems = [
   {
     title: "Liked Songs",
     meta: "Playlist - 244 songs",
@@ -34,38 +34,47 @@ const libraryItems = [
 export default function Sidebar() {
   return (
     <aside className="sidebar">
-      <div className="sidebar-header">
-        <h1 className="sidebar-title">Midnight Radio</h1>
-        <button className="icon-button" type="button">
-          +
+      <div className="library-header">
+        <h2 className="library-title">Your Library</h2>
+        <div className="library-actions">
+          <button className="icon-button ghost" type="button" aria-label="Add">
+            +
+          </button>
+          <button
+            className="icon-button ghost"
+            type="button"
+            aria-label="Expand"
+          >
+            {">"}
+          </button>
+        </div>
+      </div>
+      <div className="chip-row">
+        <button className="chip is-active" type="button">
+          Playlists
+        </button>
+        <button className="chip" type="button">
+          Podcasts
         </button>
       </div>
-      <nav className="sidebar-nav">
-        <a href="/">Home</a>
-        <a href="/search">Search</a>
-        <a href="/library">Your Library</a>
-      </nav>
-      <div className="sidebar-section">
-        <div className="sidebar-section-head">
-          <span className="sidebar-label">Your Library</span>
-          <button className="text-button" type="button">
-            Recents
-          </button>
-        </div>
-        <div className="chip-row">
-          <button className="chip is-active" type="button">
-            Playlists
-          </button>
-          <button className="chip" type="button">
-            Podcasts
-          </button>
-          <button className="chip" type="button">
-            Artists
-          </button>
-        </div>
-      </div>
-      <div className="sidebar-search">
-        <input type="text" placeholder="Search in library" />
+      <div className="library-tools">
+        <button
+          className="icon-button ghost"
+          type="button"
+          aria-label="Search library"
+        >
+          S
+        </button>
+        <button className="text-button" type="button">
+          Recents
+        </button>
+        <button
+          className="icon-button ghost"
+          type="button"
+          aria-label="Sort"
+        >
+          ==
+        </button>
       </div>
       <div className="sidebar-list">
         {libraryItems.map((item) => (
@@ -81,4 +90,3 @@ export default function Sidebar() {
     </aside>
   );
 }
-

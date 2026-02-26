@@ -17,9 +17,9 @@ export default function App() {
   return (
     <BrowserRouter>
       <div className="app-shell">
+        <TopBar />
         <Sidebar />
         <div className="app-main">
-          <TopBar />
           <div className="app-content">
             <Routes>
               <Route path="/" element={<HomePage />} />

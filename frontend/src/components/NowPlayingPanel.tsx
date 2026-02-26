@@ -2,10 +2,18 @@ export default function NowPlayingPanel() {
   return (
     <aside className="now-panel">
       <div className="now-header">
-        <span>Now Playing</span>
-        <button className="icon-button" type="button">
-          ...
-        </button>
+        <div className="now-header-left">
+          <span className="now-header-badge">[]</span>
+          <span className="now-header-title">Pahina</span>
+        </div>
+        <div className="now-header-actions">
+          <button className="icon-button ghost" type="button" aria-label="Like">
+            +
+          </button>
+          <button className="icon-button ghost" type="button" aria-label="More">
+            ...
+          </button>
+        </div>
       </div>
       <div className="now-card">
         <div className="now-art" />
@@ -14,14 +22,14 @@ export default function NowPlayingPanel() {
           <p>Cup of Joe</p>
         </div>
         <div className="now-actions">
-          <button className="chip" type="button">
-            Lyrics
+          <button className="icon-button ghost" type="button" aria-label="Share">
+            S
           </button>
-          <button className="chip" type="button">
-            Queue
+          <button className="icon-button ghost" type="button" aria-label="Add">
+            +
           </button>
-          <button className="chip" type="button">
-            Share
+          <button className="icon-button ghost" type="button" aria-label="More">
+            ...
           </button>
         </div>
       </div>
@@ -32,23 +40,6 @@ export default function NowPlayingPanel() {
           <div className="about-text">
             <h4>Cup of Joe</h4>
             <p>Quezon City. 1.2M monthly listeners.</p>
-          </div>
-        </div>
-      </div>
-      <div className="now-queue">
-        <span className="section-label">Next in queue</span>
-        <div className="queue-item">
-          <div className="queue-thumb" />
-          <div>
-            <div className="queue-title">Midnight Drive</div>
-            <div className="queue-artist">Neon Drift</div>
-          </div>
-        </div>
-        <div className="queue-item">
-          <div className="queue-thumb" />
-          <div>
-            <div className="queue-title">Silent Sanctuary</div>
-            <div className="queue-artist">Acoustic Set</div>
           </div>
         </div>
       </div>
