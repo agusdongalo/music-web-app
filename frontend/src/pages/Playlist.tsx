@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { apiFetch } from "../api/client";
 import TrackRow from "../components/TrackRow";
+import { useAuthStore } from "../store/authStore";
 import { usePlayerStore } from "../store/playerStore";
 import { formatDuration } from "../utils/format";
 
@@ -32,6 +33,7 @@ export default function PlaylistPage() {
     "loading"
   );
   const [error, setError] = useState<string | null>(null);
+  const token = useAuthStore((state) => state.token);
   const { setTrack, setPlaying } = usePlayerStore();
 
   useEffect(() => {
@@ -43,7 +45,10 @@ export default function PlaylistPage() {
 
     let active = true;
     setStatus("loading");
-    apiFetch<Playlist>(`/playlists/public/${id}`)
+
+    const endpoint = token ? `/playlists/${id}` : `/playlists/public/${id}`;
+
+    apiFetch<Playlist>(endpoint)
       .then((data) => {
         if (!active) {
           return;
@@ -62,7 +67,7 @@ export default function PlaylistPage() {
     return () => {
       active = false;
     };
-  }, [id]);
+  }, [id, token]);
 
   const handlePlay = (track: Playlist["items"][number]["track"]) => {
     setTrack({

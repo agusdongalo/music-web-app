@@ -21,7 +21,18 @@ export async function apiFetch<T>(
   });
 
   if (!response.ok) {
-    const message = await response.text();
+    const contentType = response.headers.get("content-type") ?? "";
+    let message = "";
+    if (contentType.includes("application/json")) {
+      try {
+        const data = await response.json();
+        message = data?.message ?? JSON.stringify(data);
+      } catch {
+        message = "";
+      }
+    } else {
+      message = await response.text();
+    }
     throw new Error(message || `Request failed: ${response.status}`);
   }
 

@@ -4,6 +4,7 @@ import Sidebar from "../components/Sidebar";
 import TopBar from "../components/TopBar";
 import PlayerBar from "../components/PlayerBar";
 import NowPlayingPanel from "../components/NowPlayingPanel";
+import RequireAuth from "../components/RequireAuth";
 import HomePage from "../pages/Home";
 import SearchPage from "../pages/Search";
 import ArtistPage from "../pages/Artist";
@@ -27,7 +28,14 @@ export default function App() {
               <Route path="/artist/:id" element={<ArtistPage />} />
               <Route path="/album/:id" element={<AlbumPage />} />
               <Route path="/playlist/:id" element={<PlaylistPage />} />
-              <Route path="/library" element={<LibraryPage />} />
+              <Route
+                path="/library"
+                element={
+                  <RequireAuth>
+                    <LibraryPage />
+                  </RequireAuth>
+                }
+              />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
             </Routes>

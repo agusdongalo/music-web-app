@@ -18,8 +18,7 @@ type Playlist = {
   id: string;
   name: string;
   coverUrl?: string | null;
-  user?: { displayName: string } | null;
-  _count?: { items: number } | null;
+  isPublic?: boolean;
 };
 
 export default function LibraryPage() {
@@ -36,8 +35,8 @@ export default function LibraryPage() {
     setStatus("loading");
 
     Promise.all([
-      apiFetch<Track[]>("/tracks?limit=8"),
-      apiFetch<Playlist[]>("/playlists/public?limit=4"),
+      apiFetch<Track[]>("/me/liked-tracks"),
+      apiFetch<Playlist[]>("/playlists"),
     ])
       .then(([tracksResponse, playlistsResponse]) => {
         if (!active) {
@@ -86,9 +85,7 @@ export default function LibraryPage() {
       <div className="section-header">
         <div>
           <h2>Your Library</h2>
-          <p className="section-subtitle">
-            Sign in to sync your liked tracks and playlists.
-          </p>
+          <p className="section-subtitle">Your saved tracks and playlists.</p>
         </div>
       </div>
 
@@ -97,53 +94,58 @@ export default function LibraryPage() {
       ) : (
         <>
           <div>
-            <h3>Top tracks</h3>
-            {tracks.map((track) => (
-              <TrackRow
-                key={track.id}
-                title={track.title}
-                artist={track.artist?.name}
-                duration={formatDuration(track.durationSec)}
-                onPlay={() => handlePlay(track)}
-              />
-            ))}
+            <h3>Liked tracks</h3>
+            {tracks.length === 0 ? (
+              <p className="section-subtitle">No liked tracks yet.</p>
+            ) : (
+              tracks.map((track) => (
+                <TrackRow
+                  key={track.id}
+                  title={track.title}
+                  artist={track.artist?.name}
+                  duration={formatDuration(track.durationSec)}
+                  onPlay={() => handlePlay(track)}
+                />
+              ))
+            )}
           </div>
 
           <div className="page-section">
             <div className="section-header">
               <div>
-                <h2>Public playlists</h2>
-                <p className="section-subtitle">Shared by the community.</p>
+                <h2>Your playlists</h2>
+                <p className="section-subtitle">Curated by you.</p>
               </div>
             </div>
             <div className="collection-grid">
-              {playlists.map((playlist, index) => (
-                <a
-                  key={playlist.id}
-                  className="collection-card"
-                  href={`/playlist/${playlist.id}`}
-                >
-                  <div
-                    className={`collection-art tone-${index + 1}`}
-                    style={
-                      playlist.coverUrl
-                        ? {
-                            backgroundImage: `url(${playlist.coverUrl})`,
-                            backgroundSize: "cover",
-                            backgroundPosition: "center",
-                          }
-                        : undefined
-                    }
-                  />
-                  <div className="collection-title">{playlist.name}</div>
-                  <div className="collection-meta">
-                    {playlist.user?.displayName ?? "Community"}
-                    {playlist._count?.items
-                      ? ` · ${playlist._count.items} tracks`
-                      : ""}
-                  </div>
-                </a>
-              ))}
+              {playlists.length === 0 ? (
+                <p className="section-subtitle">No playlists yet.</p>
+              ) : (
+                playlists.map((playlist, index) => (
+                  <a
+                    key={playlist.id}
+                    className="collection-card"
+                    href={`/playlist/${playlist.id}`}
+                  >
+                    <div
+                      className={`collection-art tone-${(index % 4) + 1}`}
+                      style={
+                        playlist.coverUrl
+                          ? {
+                              backgroundImage: `url(${playlist.coverUrl})`,
+                              backgroundSize: "cover",
+                              backgroundPosition: "center",
+                            }
+                          : undefined
+                      }
+                    />
+                    <div className="collection-title">{playlist.name}</div>
+                    <div className="collection-meta">
+                      {playlist.isPublic ? "Public" : "Private"}
+                    </div>
+                  </a>
+                ))
+              )}
             </div>
           </div>
         </>

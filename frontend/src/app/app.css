@@ -719,6 +719,73 @@ button {
   color: var(--text-muted);
 }
 
+.auth-shell {
+  max-width: 420px;
+  margin: 0 auto;
+  background: var(--surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  display: grid;
+  gap: 18px;
+  box-shadow: 0 18px 32px rgba(4, 4, 8, 0.4);
+}
+
+.auth-form {
+  display: grid;
+  gap: 14px;
+}
+
+.auth-field {
+  display: grid;
+  gap: 6px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+}
+
+.auth-field input {
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border-subtle);
+  background: #11121e;
+  color: var(--text-primary);
+  font-size: 14px;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.auth-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.auth-helper {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.auth-error {
+  font-size: 13px;
+  color: #ff8aa4;
+}
+
+.auth-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--text-muted);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .now-panel {
   gap: 16px;
 }
