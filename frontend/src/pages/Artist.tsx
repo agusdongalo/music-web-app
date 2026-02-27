@@ -5,6 +5,8 @@ import ArtistHeader from "../components/ArtistHeader";
 import TrackRow from "../components/TrackRow";
 import { usePlayerStore } from "../store/playerStore";
 import { formatDuration } from "../utils/format";
+import { useLikedTracks } from "../hooks/useLikedTracks";
+import HEART_ICON from "../components/icons/HeartIcon";
 
 type Artist = {
   id: string;
@@ -28,7 +30,8 @@ export default function ArtistPage() {
     "loading"
   );
   const [error, setError] = useState<string | null>(null);
-  const { setTrack, setPlaying } = usePlayerStore();
+  const { playQueue } = usePlayerStore();
+  const { likedIds, toggleLike, isAuthenticated } = useLikedTracks();
 
   useEffect(() => {
     if (!id) {
@@ -60,16 +63,19 @@ export default function ArtistPage() {
     };
   }, [id]);
 
-  const handlePlay = (track: Artist["tracks"][number]) => {
-    setTrack({
-      id: track.id,
-      title: track.title,
-      artistName: artist?.name,
-      audioUrl: track.audioUrl,
-      durationSec: track.durationSec,
-      coverUrl: track.coverUrl ?? undefined,
-    });
-    setPlaying(true);
+  const queueItems = artist
+    ? artist.tracks.map((track) => ({
+        id: track.id,
+        title: track.title,
+        artistName: artist.name,
+        audioUrl: track.audioUrl,
+        durationSec: track.durationSec,
+        coverUrl: track.coverUrl ?? undefined,
+      }))
+    : [];
+
+  const handlePlay = (index: number) => {
+    playQueue(queueItems, index);
   };
 
   if (status === "loading") {
@@ -97,13 +103,26 @@ export default function ArtistPage() {
       />
       <div>
         <h3>Popular</h3>
-        {artist.tracks.map((track) => (
+        {artist.tracks.map((track, index) => (
           <TrackRow
             key={track.id}
             title={track.title}
             artist={artist.name}
             duration={formatDuration(track.durationSec)}
-            onPlay={() => handlePlay(track)}
+            onPlay={() => handlePlay(index)}
+            actions={
+              isAuthenticated
+                ? [
+                    {
+                      label: likedIds.has(track.id) ? "Unlike" : "Like",
+                      onClick: () => toggleLike(track.id),
+                      icon: HEART_ICON,
+                      className: likedIds.has(track.id) ? "is-liked" : "",
+                      pressed: likedIds.has(track.id),
+                    },
+                  ]
+                : undefined
+            }
           />
         ))}
       </div>

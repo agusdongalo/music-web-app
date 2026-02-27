@@ -5,6 +5,7 @@ import TopBar from "../components/TopBar";
 import PlayerBar from "../components/PlayerBar";
 import NowPlayingPanel from "../components/NowPlayingPanel";
 import RequireAuth from "../components/RequireAuth";
+import AudioPlayer from "../components/AudioPlayer";
 import HomePage from "../pages/Home";
 import SearchPage from "../pages/Search";
 import ArtistPage from "../pages/Artist";
@@ -18,9 +19,9 @@ export default function App() {
   return (
     <BrowserRouter>
       <div className="app-shell">
-        <TopBar />
         <Sidebar />
         <div className="app-main">
+          <TopBar />
           <div className="app-content">
             <Routes>
               <Route path="/" element={<HomePage />} />
@@ -44,6 +45,7 @@ export default function App() {
         <NowPlayingPanel />
       </div>
       <PlayerBar />
+      <AudioPlayer />
     </BrowserRouter>
   );
 }

@@ -1,7 +1,9 @@
-ï»¿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { apiFetch } from "../api/client";
 import { usePlayerStore } from "../store/playerStore";
 import { formatDuration } from "../utils/format";
+import { useLikedTracks } from "../hooks/useLikedTracks";
+import HEART_ICON from "../components/icons/HeartIcon";
 
 type Track = {
   id: string;
@@ -36,7 +38,8 @@ export default function HomePage() {
     "loading"
   );
   const [error, setError] = useState<string | null>(null);
-  const { setTrack, setPlaying } = usePlayerStore();
+  const { playQueue } = usePlayerStore();
+  const { likedIds, toggleLike, isAuthenticated } = useLikedTracks();
 
   useEffect(() => {
     let active = true;
@@ -69,16 +72,17 @@ export default function HomePage() {
     };
   }, []);
 
-  const handlePlay = (track: Track) => {
-    setTrack({
-      id: track.id,
-      title: track.title,
-      artistName: track.artist?.name,
-      audioUrl: track.audioUrl,
-      durationSec: track.durationSec,
-      coverUrl: track.coverUrl ?? track.album?.coverUrl ?? undefined,
-    });
-    setPlaying(true);
+  const queueItems = tracks.map((track) => ({
+    id: track.id,
+    title: track.title,
+    artistName: track.artist?.name,
+    audioUrl: track.audioUrl,
+    durationSec: track.durationSec,
+    coverUrl: track.coverUrl ?? track.album?.coverUrl ?? undefined,
+  }));
+
+  const handlePlay = (index: number) => {
+    playQueue(queueItems, index);
   };
 
   if (status === "error") {
@@ -108,12 +112,12 @@ export default function HomePage() {
           <p className="section-subtitle">Loading picks...</p>
         ) : (
           <div className="hero-grid stagger">
-            {tracks.map((track) => (
+            {tracks.map((track, index) => (
               <button
                 key={track.id}
                 className="hero-card glow"
                 type="button"
-                onClick={() => handlePlay(track)}
+                onClick={() => handlePlay(index)}
               >
                 <div
                   className="hero-art"
@@ -127,14 +131,36 @@ export default function HomePage() {
                       : undefined
                   }
                 />
-                <div>
+                <div className="hero-meta">
                   <div className="hero-title">{track.title}</div>
                   <div className="hero-subtitle">
-                    {track.artist?.name ?? "Unknown"} Â· {formatDuration(
+                    {track.artist?.name ?? "Unknown"} · {formatDuration(
                       track.durationSec
                     )}
                   </div>
                 </div>
+                {isAuthenticated && (
+                  <span
+                    className={`hero-like track-row-action ${
+                      likedIds.has(track.id) ? "is-liked" : ""
+                    }`}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={likedIds.has(track.id) ? "Unlike" : "Like"}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      toggleLike(track.id);
+                    }}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+                        toggleLike(track.id);
+                      }
+                    }}
+                  >
+                    {HEART_ICON}
+                  </span>
+                )}
               </button>
             ))}
           </div>
@@ -215,7 +241,7 @@ export default function HomePage() {
               <div className="collection-meta">
                 {playlist.user?.displayName ?? "Community"}
                 {playlist._count?.items
-                  ? ` Â· ${playlist._count.items} tracks`
+                  ? ` · ${playlist._count.items} tracks`
                   : ""}
               </div>
             </a>

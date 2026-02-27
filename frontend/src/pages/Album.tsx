@@ -4,6 +4,8 @@ import { apiFetch } from "../api/client";
 import TrackRow from "../components/TrackRow";
 import { usePlayerStore } from "../store/playerStore";
 import { formatDuration } from "../utils/format";
+import { useLikedTracks } from "../hooks/useLikedTracks";
+import HEART_ICON from "../components/icons/HeartIcon";
 
 type Album = {
   id: string;
@@ -27,7 +29,8 @@ export default function AlbumPage() {
     "loading"
   );
   const [error, setError] = useState<string | null>(null);
-  const { setTrack, setPlaying } = usePlayerStore();
+  const { playQueue } = usePlayerStore();
+  const { likedIds, toggleLike, isAuthenticated } = useLikedTracks();
 
   useEffect(() => {
     if (!id) {
@@ -59,16 +62,19 @@ export default function AlbumPage() {
     };
   }, [id]);
 
-  const handlePlay = (track: Album["tracks"][number]) => {
-    setTrack({
-      id: track.id,
-      title: track.title,
-      artistName: album?.artist?.name,
-      audioUrl: track.audioUrl,
-      durationSec: track.durationSec,
-      coverUrl: track.coverUrl ?? album?.coverUrl ?? undefined,
-    });
-    setPlaying(true);
+  const queueItems = album
+    ? album.tracks.map((track) => ({
+        id: track.id,
+        title: track.title,
+        artistName: album.artist?.name,
+        audioUrl: track.audioUrl,
+        durationSec: track.durationSec,
+        coverUrl: track.coverUrl ?? album.coverUrl ?? undefined,
+      }))
+    : [];
+
+  const handlePlay = (index: number) => {
+    playQueue(queueItems, index);
   };
 
   if (status === "loading") {
@@ -112,13 +118,26 @@ export default function AlbumPage() {
 
       <div>
         <h3>Tracks</h3>
-        {album.tracks.map((track) => (
+        {album.tracks.map((track, index) => (
           <TrackRow
             key={track.id}
             title={track.title}
             artist={album.artist?.name}
             duration={formatDuration(track.durationSec)}
-            onPlay={() => handlePlay(track)}
+            onPlay={() => handlePlay(index)}
+            actions={
+              isAuthenticated
+                ? [
+                    {
+                      label: likedIds.has(track.id) ? "Unlike" : "Like",
+                      onClick: () => toggleLike(track.id),
+                      icon: HEART_ICON,
+                      className: likedIds.has(track.id) ? "is-liked" : "",
+                      pressed: likedIds.has(track.id),
+                    },
+                  ]
+                : undefined
+            }
           />
         ))}
       </div>

@@ -16,15 +16,47 @@ export default function TopBar() {
     <header className="topbar">
       <div className="topbar-left">
         <div className="topbar-nav">
-          <button className="icon-button" type="button" aria-label="Go back">
-            {"<"}
+          <button
+            className="icon-button ghost"
+            type="button"
+            aria-label="Go back"
+            title="Back"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M14.5 6 8.5 12l6 6"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
           </button>
           <button
-            className="icon-button"
+            className="icon-button ghost"
             type="button"
             aria-label="Go forward"
+            title="Forward"
           >
-            {">"}
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M9.5 6 15.5 12l-6 6"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+          <button className="home-button" type="button" aria-label="Home" title="Home">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M4 11.5 12 5l8 6.5V20a1 1 0 0 1-1 1h-5v-6h-4v6H5a1 1 0 0 1-1-1v-8.5z"
+                fill="currentColor"
+              />
+            </svg>
           </button>
         </div>
         <div className="search-field">
