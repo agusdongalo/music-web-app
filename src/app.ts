@@ -6,6 +6,7 @@ import albumRouter from "./routes/albums";
 import trackRouter from "./routes/tracks";
 import playlistRouter from "./routes/playlists";
 import searchRouter from "./routes/search";
+import audiusRouter from "./routes/audius";
 import meRouter from "./routes/me";
 import { errorHandler, notFound } from "./middleware/error";
 import { env } from "./env";
@@ -54,6 +55,7 @@ app.use("/albums", albumRouter);
 app.use("/tracks", trackRouter);
 app.use("/playlists", playlistRouter);
 app.use("/search", searchRouter);
+app.use("/audius", audiusRouter);
 app.use("/me", meRouter);
 
 app.use(notFound);

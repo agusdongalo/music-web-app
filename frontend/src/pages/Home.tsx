@@ -2,61 +2,65 @@ import { useEffect, useState } from "react";
 import { apiFetch } from "../api/client";
 import { usePlayerStore } from "../store/playerStore";
 import { formatDuration } from "../utils/format";
-import { useLikedTracks } from "../hooks/useLikedTracks";
-import HEART_ICON from "../components/icons/HeartIcon";
 
-type Track = {
-  id: string;
-  title: string;
-  durationSec: number;
-  audioUrl: string;
-  coverUrl?: string | null;
-  artist?: { name: string } | null;
-  album?: { coverUrl?: string | null } | null;
+type AudiusSearchResults = {
+  tracks: Array<{
+    id: string;
+    title: string;
+    artistName?: string;
+    durationSec?: number;
+    audioUrl: string;
+    coverUrl?: string;
+    externalUrl?: string;
+  }>;
+  artists: Array<{
+    id: string;
+    name: string;
+    imageUrl?: string;
+    externalUrl?: string;
+  }>;
+  playlists: Array<{
+    id: string;
+    title: string;
+    ownerName?: string;
+    coverUrl?: string;
+    externalUrl?: string;
+  }>;
 };
 
-type Album = {
-  id: string;
-  title: string;
-  coverUrl?: string | null;
-  artist?: { name: string } | null;
+const preventDefault = (event: { preventDefault: () => void }) => {
+  event.preventDefault();
 };
 
-type Playlist = {
-  id: string;
-  name: string;
-  coverUrl?: string | null;
-  user?: { displayName: string } | null;
-  _count?: { items: number } | null;
-};
+const linkProps = (href?: string) =>
+  href
+    ? { href, target: "_blank", rel: "noreferrer" }
+    : { href: "#", onClick: preventDefault };
 
 export default function HomePage() {
-  const [tracks, setTracks] = useState<Track[]>([]);
-  const [albums, setAlbums] = useState<Album[]>([]);
-  const [playlists, setPlaylists] = useState<Playlist[]>([]);
+  const [tracks, setTracks] = useState<AudiusSearchResults["tracks"]>([]);
+  const [artists, setArtists] = useState<AudiusSearchResults["artists"]>([]);
+  const [playlists, setPlaylists] = useState<AudiusSearchResults["playlists"]>(
+    []
+  );
   const [status, setStatus] = useState<"idle" | "loading" | "error">(
     "loading"
   );
   const [error, setError] = useState<string | null>(null);
   const { playQueue } = usePlayerStore();
-  const { likedIds, toggleLike, isAuthenticated } = useLikedTracks();
 
   useEffect(() => {
     let active = true;
     setStatus("loading");
 
-    Promise.all([
-      apiFetch<Track[]>("/tracks?limit=6"),
-      apiFetch<Album[]>("/albums"),
-      apiFetch<Playlist[]>("/playlists/public?limit=4"),
-    ])
-      .then(([tracksResponse, albumsResponse, playlistsResponse]) => {
+    apiFetch<AudiusSearchResults>("/audius/search?q=midnight&limit=12")
+      .then((data) => {
         if (!active) {
           return;
         }
-        setTracks(tracksResponse);
-        setAlbums(albumsResponse.slice(0, 4));
-        setPlaylists(playlistsResponse.slice(0, 4));
+        setTracks(data.tracks.slice(0, 6));
+        setArtists(data.artists.slice(0, 4));
+        setPlaylists(data.playlists.slice(0, 4));
         setStatus("idle");
       })
       .catch((err: Error) => {
@@ -75,10 +79,10 @@ export default function HomePage() {
   const queueItems = tracks.map((track) => ({
     id: track.id,
     title: track.title,
-    artistName: track.artist?.name,
+    artistName: track.artistName,
     audioUrl: track.audioUrl,
-    durationSec: track.durationSec,
-    coverUrl: track.coverUrl ?? track.album?.coverUrl ?? undefined,
+    durationSec: track.durationSec ?? 0,
+    coverUrl: track.coverUrl ?? undefined,
   }));
 
   const handlePlay = (index: number) => {
@@ -134,33 +138,11 @@ export default function HomePage() {
                 <div className="hero-meta">
                   <div className="hero-title">{track.title}</div>
                   <div className="hero-subtitle">
-                    {track.artist?.name ?? "Unknown"} · {formatDuration(
+                    {track.artistName ?? "Unknown"} · {formatDuration(
                       track.durationSec
                     )}
                   </div>
                 </div>
-                {isAuthenticated && (
-                  <span
-                    className={`hero-like track-row-action ${
-                      likedIds.has(track.id) ? "is-liked" : ""
-                    }`}
-                    role="button"
-                    tabIndex={0}
-                    aria-label={likedIds.has(track.id) ? "Unlike" : "Like"}
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      toggleLike(track.id);
-                    }}
-                    onKeyDown={(event) => {
-                      if (event.key === "Enter" || event.key === " ") {
-                        event.preventDefault();
-                        toggleLike(track.id);
-                      }
-                    }}
-                  >
-                    {HEART_ICON}
-                  </span>
-                )}
               </button>
             ))}
           </div>
@@ -172,50 +154,10 @@ export default function HomePage() {
           <div>
             <span className="section-label">Made for</span>
             <h2>donlicioso</h2>
-            <p className="section-subtitle">
-              Fresh picks tuned to your midnight rotation.
-            </p>
+            <p className="section-subtitle">Fresh Audius picks for tonight.</p>
           </div>
           <button className="text-button" type="button">
             Show all
-          </button>
-        </div>
-        <div className="collection-grid">
-          {albums.map((album, index) => (
-            <a
-              key={album.id}
-              className="collection-card"
-              href={`/album/${album.id}`}
-            >
-              <div
-                className={`collection-art tone-${index + 1}`}
-                style={
-                  album.coverUrl
-                    ? {
-                        backgroundImage: `url(${album.coverUrl})`,
-                        backgroundSize: "cover",
-                        backgroundPosition: "center",
-                      }
-                    : undefined
-                }
-              />
-              <div className="collection-title">{album.title}</div>
-              <div className="collection-meta">
-                {album.artist?.name ?? "Unknown artist"}
-              </div>
-            </a>
-          ))}
-        </div>
-      </section>
-
-      <section className="page-section">
-        <div className="section-header">
-          <div>
-            <h2>Late night picks</h2>
-            <p className="section-subtitle">Stay locked in with neon calm.</p>
-          </div>
-          <button className="text-button" type="button">
-            Browse
           </button>
         </div>
         <div className="collection-grid">
@@ -223,7 +165,7 @@ export default function HomePage() {
             <a
               key={playlist.id}
               className="collection-card"
-              href={`/playlist/${playlist.id}`}
+              {...linkProps(playlist.externalUrl)}
             >
               <div
                 className={`collection-art tone-${index + 1}`}
@@ -237,13 +179,46 @@ export default function HomePage() {
                     : undefined
                 }
               />
-              <div className="collection-title">{playlist.name}</div>
+              <div className="collection-title">{playlist.title}</div>
               <div className="collection-meta">
-                {playlist.user?.displayName ?? "Community"}
-                {playlist._count?.items
-                  ? ` · ${playlist._count.items} tracks`
-                  : ""}
+                {playlist.ownerName ?? "Audius"}
               </div>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      <section className="page-section">
+        <div className="section-header">
+          <div>
+            <h2>Discover artists</h2>
+            <p className="section-subtitle">Explore the Audius community.</p>
+          </div>
+          <button className="text-button" type="button">
+            Browse
+          </button>
+        </div>
+        <div className="collection-grid">
+          {artists.map((artist, index) => (
+            <a
+              key={artist.id}
+              className="collection-card"
+              {...linkProps(artist.externalUrl)}
+            >
+              <div
+                className={`collection-art tone-${index + 1}`}
+                style={
+                  artist.imageUrl
+                    ? {
+                        backgroundImage: `url(${artist.imageUrl})`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                      }
+                    : undefined
+                }
+              />
+              <div className="collection-title">{artist.name}</div>
+              <div className="collection-meta">Artist</div>
             </a>
           ))}
         </div>

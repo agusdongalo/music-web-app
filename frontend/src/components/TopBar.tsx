@@ -1,4 +1,5 @@
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
 
 export default function TopBar() {
@@ -6,10 +7,46 @@ export default function TopBar() {
   const token = useAuthStore((state) => state.token);
   const clearAuth = useAuthStore((state) => state.clearAuth);
   const navigate = useNavigate();
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const [searchText, setSearchText] = useState("");
+  const isSearchPage = location.pathname.startsWith("/search");
+
+  useEffect(() => {
+    if (!isSearchPage) return;
+    const q = searchParams.get("q") ?? "";
+    setSearchText(q);
+  }, [isSearchPage, searchParams]);
 
   const handleLogout = () => {
     clearAuth();
     navigate("/login", { replace: true });
+  };
+
+  const handleSearchSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const trimmed = searchText.trim();
+    if (!trimmed) {
+      navigate("/search", { replace: true });
+      return;
+    }
+    navigate(`/search?q=${encodeURIComponent(trimmed)}`);
+  };
+
+  const handleSearchFocus = () => {
+    if (!isSearchPage) {
+      navigate("/search");
+    }
+  };
+
+  const handleSearchChange = (value: string) => {
+    setSearchText(value);
+    const trimmed = value.trim();
+    if (!trimmed) {
+      navigate("/search", { replace: true });
+    } else {
+      navigate(`/search?q=${encodeURIComponent(trimmed)}`, { replace: true });
+    }
   };
 
   return (
@@ -59,9 +96,15 @@ export default function TopBar() {
             </svg>
           </button>
         </div>
-        <div className="search-field">
-          <input type="text" placeholder="What do you want to play?" />
-        </div>
+        <form className="search-field" onSubmit={handleSearchSubmit}>
+          <input
+            type="text"
+            placeholder="What do you want to play?"
+            value={searchText}
+            onChange={(event) => handleSearchChange(event.target.value)}
+            onFocus={handleSearchFocus}
+          />
+        </form>
       </div>
       <div className="topbar-actions">
         <button className="button-primary topbar-cta" type="button">

@@ -4,6 +4,7 @@ type TrackRowProps = {
   title: string;
   artist?: string;
   duration?: string;
+  playLabel?: string;
   onPlay?: () => void;
   actions?: Array<{
     label: string;
@@ -18,6 +19,7 @@ export default function TrackRow({
   title,
   artist,
   duration,
+  playLabel,
   onPlay,
   actions,
 }: TrackRowProps) {
@@ -29,7 +31,7 @@ export default function TrackRow({
         type="button"
         disabled={!onPlay}
       >
-        Play
+        {playLabel ?? "Play"}
       </button>
       <div className="track-row-meta">
         <div className="track-row-title">{title}</div>

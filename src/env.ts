@@ -7,6 +7,7 @@ const envSchema = z.object({
   JWT_SECRET: z.string().min(10),
   JWT_EXPIRES_IN: z.string().default("15m"),
   CORS_ORIGIN: z.string().optional(),
+  AUDIUS_APP_NAME: z.string().optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);
