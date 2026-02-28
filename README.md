@@ -20,6 +20,27 @@ npm run dev
 
 Frontend runs at `http://localhost:5173`. If 5173 is in use, Vite will choose another port and print the URL in the terminal.
 
+## Audius (full tracks)
+
+This app uses Audius for full-length playback without Spotify Premium. The backend exposes:
+
+- `GET /audius/search?q=...&limit=...`
+
+Optional env setting (root `.env`):
+
+```
+AUDIUS_APP_NAME="music-app"
+```
+
+The Search page and Home page both pull Audius results and play full tracks.
+
+## Online previews
+
+For broader catalog search, the app also fetches:
+
+- iTunes 30-second previews
+- MusicBrainz metadata
+
 ## Demo account
 
 Use the seeded demo account to sign in:
