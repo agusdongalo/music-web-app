@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { apiFetch } from "../api/client";
 import { usePlayerStore } from "../store/playerStore";
 import { formatDuration } from "../utils/format";
@@ -53,14 +54,14 @@ export default function HomePage() {
     let active = true;
     setStatus("loading");
 
-    apiFetch<AudiusSearchResults>("/audius/search?q=midnight&limit=12")
+    apiFetch<AudiusSearchResults>("/audius/search?q=opm&limit=12")
       .then((data) => {
         if (!active) {
           return;
         }
         setTracks(data.tracks.slice(0, 6));
         setArtists(data.artists.slice(0, 4));
-        setPlaylists(data.playlists.slice(0, 4));
+        setPlaylists(data.playlists.slice(0, 6));
         setStatus("idle");
       })
       .catch((err: Error) => {
@@ -116,19 +117,18 @@ export default function HomePage() {
           <p className="section-subtitle">Loading picks...</p>
         ) : (
           <div className="hero-grid stagger">
-            {tracks.map((track, index) => (
-              <button
-                key={track.id}
+            {playlists.map((playlist) => (
+              <Link
+                key={playlist.id}
                 className="hero-card glow"
-                type="button"
-                onClick={() => handlePlay(index)}
+                to={`/audius/playlist/${playlist.id}`}
               >
                 <div
                   className="hero-art"
                   style={
-                    track.coverUrl
+                    playlist.coverUrl
                       ? {
-                          backgroundImage: `url(${track.coverUrl})`,
+                          backgroundImage: `url(${playlist.coverUrl})`,
                           backgroundSize: "cover",
                           backgroundPosition: "center",
                         }
@@ -136,14 +136,12 @@ export default function HomePage() {
                   }
                 />
                 <div className="hero-meta">
-                  <div className="hero-title">{track.title}</div>
+                  <div className="hero-title">{playlist.title}</div>
                   <div className="hero-subtitle">
-                    {track.artistName ?? "Unknown"} · {formatDuration(
-                      track.durationSec
-                    )}
+                    {playlist.ownerName ?? "Audius"} · Playlist
                   </div>
                 </div>
-              </button>
+              </Link>
             ))}
           </div>
         )}
@@ -161,29 +159,32 @@ export default function HomePage() {
           </button>
         </div>
         <div className="collection-grid">
-          {playlists.map((playlist, index) => (
-            <a
-              key={playlist.id}
+          {tracks.map((track, index) => (
+            <button
+              key={track.id}
               className="collection-card"
-              {...linkProps(playlist.externalUrl)}
+              type="button"
+              onClick={() => handlePlay(index)}
             >
               <div
                 className={`collection-art tone-${index + 1}`}
                 style={
-                  playlist.coverUrl
+                  track.coverUrl
                     ? {
-                        backgroundImage: `url(${playlist.coverUrl})`,
+                        backgroundImage: `url(${track.coverUrl})`,
                         backgroundSize: "cover",
                         backgroundPosition: "center",
                       }
                     : undefined
                 }
               />
-              <div className="collection-title">{playlist.title}</div>
+              <div className="collection-title">{track.title}</div>
               <div className="collection-meta">
-                {playlist.ownerName ?? "Audius"}
+                {track.artistName ?? "Unknown artist"} · {formatDuration(
+                  track.durationSec
+                )}
               </div>
-            </a>
+            </button>
           ))}
         </div>
       </section>

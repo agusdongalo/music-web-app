@@ -26,9 +26,13 @@ type AudiusPlaylist = {
   id?: string;
   playlist_id?: string;
   playlist_name?: string;
+  description?: string;
   artwork?: AudiusArtwork;
   user?: AudiusUser;
   permalink?: string;
+  track_count?: number;
+  total_play_count?: number;
+  created_at?: string;
 };
 
 export type AudiusSearchResults = {
@@ -57,6 +61,28 @@ export type AudiusSearchResults = {
     externalUrl?: string;
     source: "audius";
   }>;
+};
+
+export type AudiusTrackItem = {
+  id: string;
+  title: string;
+  artistName?: string;
+  durationSec?: number;
+  audioUrl: string;
+  coverUrl?: string;
+  externalUrl?: string;
+};
+
+export type AudiusPlaylistDetail = {
+  id: string;
+  title: string;
+  description?: string;
+  ownerName?: string;
+  coverUrl?: string;
+  externalUrl?: string;
+  trackCount?: number;
+  playCount?: number;
+  createdAt?: string;
 };
 
 const AUDIUS_BASE_URL = "https://api.audius.co/v1";
@@ -93,6 +119,37 @@ async function fetchJson<T>(url: string, init?: RequestInit): Promise<T> {
   return (await response.json()) as T;
 }
 
+function mapAudiusTrack(track: AudiusTrack, appParam: string): AudiusTrackItem {
+  return {
+    id: track.id,
+    title: track.title ?? "Unknown title",
+    artistName: track.user?.name ?? track.user?.handle,
+    durationSec: track.duration,
+    audioUrl: buildAudiusUrl(`/tracks/${track.id}/stream`, {
+      app_name: appParam,
+    }),
+    coverUrl: pickArtwork(track.artwork),
+    externalUrl: track.permalink ? `https://audius.co${track.permalink}` : undefined,
+  };
+}
+
+function mapAudiusPlaylist(playlist: AudiusPlaylist) {
+  const id = playlist.id ?? playlist.playlist_id ?? "";
+  return {
+    id,
+    title: playlist.playlist_name ?? "Untitled playlist",
+    description: playlist.description ?? undefined,
+    ownerName: playlist.user?.name ?? playlist.user?.handle,
+    coverUrl: pickArtwork(playlist.artwork),
+    externalUrl: playlist.permalink
+      ? `https://audius.co${playlist.permalink}`
+      : undefined,
+    trackCount: playlist.track_count ?? undefined,
+    playCount: playlist.total_play_count ?? undefined,
+    createdAt: playlist.created_at ?? undefined,
+  };
+}
+
 export async function searchAudius(
   query: string,
   appName?: string,
@@ -126,15 +183,7 @@ export async function searchAudius(
   ]);
 
   const tracks = (tracksRes.data ?? []).map((track) => ({
-    id: track.id,
-    title: track.title ?? "Unknown title",
-    artistName: track.user?.name ?? track.user?.handle,
-    durationSec: track.duration,
-    audioUrl: buildAudiusUrl(`/tracks/${track.id}/stream`, {
-      app_name: appParam,
-    }),
-    coverUrl: pickArtwork(track.artwork),
-    externalUrl: track.permalink ? `https://audius.co${track.permalink}` : undefined,
+    ...mapAudiusTrack(track, appParam),
     source: "audius" as const,
   }));
 
@@ -146,19 +195,56 @@ export async function searchAudius(
     source: "audius" as const,
   }));
 
-  const playlists = (playlistsRes.data ?? []).map((playlist) => {
-    const id = playlist.id ?? playlist.playlist_id ?? "";
-    return {
-      id,
-      title: playlist.playlist_name ?? "Untitled playlist",
-      ownerName: playlist.user?.name ?? playlist.user?.handle,
-      coverUrl: pickArtwork(playlist.artwork),
-      externalUrl: playlist.permalink
-        ? `https://audius.co${playlist.permalink}`
-        : undefined,
-      source: "audius" as const,
-    };
-  }).filter((playlist) => playlist.id);
+  const playlists = (playlistsRes.data ?? [])
+    .map((playlist) => {
+      const mapped = mapAudiusPlaylist(playlist);
+      return {
+        id: mapped.id,
+        title: mapped.title,
+        ownerName: mapped.ownerName,
+        coverUrl: mapped.coverUrl,
+        externalUrl: mapped.externalUrl,
+        source: "audius" as const,
+      };
+    })
+    .filter((playlist) => playlist.id);
 
   return { tracks, artists, playlists };
 }
+
+export async function getAudiusPlaylistTracks(
+  playlistId: string,
+  appName?: string
+): Promise<AudiusTrackItem[]> {
+  const appParam = appName ?? "music-app";
+  const response = await fetchJson<AudiusResponse<AudiusTrack>>(
+    buildAudiusUrl(`/playlists/${playlistId}/tracks`, {
+      app_name: appParam,
+    })
+  );
+
+  return (response.data ?? []).map((track) => mapAudiusTrack(track, appParam));
+}
+
+export async function getAudiusPlaylist(
+  playlistId: string,
+  appName?: string
+): Promise<AudiusPlaylistDetail | null> {
+  const appParam = appName ?? "music-app";
+  const response = await fetchJson<{ data: AudiusPlaylist | AudiusPlaylist[] }>(
+    buildAudiusUrl(`/playlists/${playlistId}`, {
+      app_name: appParam,
+    })
+  );
+
+  const raw = Array.isArray(response.data)
+    ? response.data[0]
+    : response.data;
+
+  if (!raw) return null;
+  const mapped = mapAudiusPlaylist(raw);
+  if (!mapped.id) return null;
+  return mapped;
+}
+
+

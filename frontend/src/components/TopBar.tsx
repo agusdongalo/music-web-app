@@ -10,6 +10,10 @@ export default function TopBar() {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const [searchText, setSearchText] = useState("");
+  const [historyIndex, setHistoryIndex] = useState(() => window.history.state?.idx ?? 0);
+  const [maxHistoryIndex, setMaxHistoryIndex] = useState(
+    () => window.history.state?.idx ?? 0
+  );
   const isSearchPage = location.pathname.startsWith("/search");
 
   useEffect(() => {
@@ -17,6 +21,12 @@ export default function TopBar() {
     const q = searchParams.get("q") ?? "";
     setSearchText(q);
   }, [isSearchPage, searchParams]);
+
+  useEffect(() => {
+    const idx = window.history.state?.idx ?? 0;
+    setHistoryIndex(idx);
+    setMaxHistoryIndex((prev) => (idx > prev ? idx : prev));
+  }, [location.pathname, location.search]);
 
   const handleLogout = () => {
     clearAuth();
@@ -49,6 +59,23 @@ export default function TopBar() {
     }
   };
 
+  const canGoBack = historyIndex > 0;
+  const canGoForward = historyIndex < maxHistoryIndex;
+
+  const handleBack = () => {
+    if (!canGoBack) return;
+    navigate(-1);
+  };
+
+  const handleForward = () => {
+    if (!canGoForward) return;
+    navigate(1);
+  };
+
+  const handleHome = () => {
+    navigate("/");
+  };
+
   return (
     <header className="topbar">
       <div className="topbar-left">
@@ -58,6 +85,8 @@ export default function TopBar() {
             type="button"
             aria-label="Go back"
             title="Back"
+            onClick={handleBack}
+            disabled={!canGoBack}
           >
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path
@@ -75,6 +104,8 @@ export default function TopBar() {
             type="button"
             aria-label="Go forward"
             title="Forward"
+            onClick={handleForward}
+            disabled={!canGoForward}
           >
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path
@@ -87,7 +118,13 @@ export default function TopBar() {
               />
             </svg>
           </button>
-          <button className="home-button" type="button" aria-label="Home" title="Home">
+          <button
+            className="home-button"
+            type="button"
+            aria-label="Home"
+            title="Home"
+            onClick={handleHome}
+          >
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path
                 d="M4 11.5 12 5l8 6.5V20a1 1 0 0 1-1 1h-5v-6h-4v6H5a1 1 0 0 1-1-1v-8.5z"

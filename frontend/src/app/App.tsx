@@ -11,6 +11,7 @@ import SearchPage from "../pages/Search";
 import ArtistPage from "../pages/Artist";
 import AlbumPage from "../pages/Album";
 import PlaylistPage from "../pages/Playlist";
+import AudiusPlaylistPage from "../pages/AudiusPlaylist";
 import LibraryPage from "../pages/Library";
 import LoginPage from "../pages/Login";
 import RegisterPage from "../pages/Register";
@@ -29,6 +30,7 @@ export default function App() {
               <Route path="/artist/:id" element={<ArtistPage />} />
               <Route path="/album/:id" element={<AlbumPage />} />
               <Route path="/playlist/:id" element={<PlaylistPage />} />
+              <Route path="/audius/playlist/:id" element={<AudiusPlaylistPage />} />
               <Route
                 path="/library"
                 element={

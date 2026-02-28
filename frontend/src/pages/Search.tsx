@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { apiFetch } from "../api/client";
 import TrackRow from "../components/TrackRow";
 import AddToPlaylistModal from "../components/AddToPlaylistModal";
@@ -490,8 +490,7 @@ export default function SearchPage() {
                         ? [
                             {
                               label: "Open in Audius",
-                              onClick: () =>
-                                window.open(track.externalUrl, "_blank"),
+                              onClick: () => window.open(track.externalUrl, "_blank"),
                               icon: (
                                 <svg viewBox="0 0 24 24" aria-hidden="true">
                                   <path
@@ -558,10 +557,10 @@ export default function SearchPage() {
                 </div>
                 <div className="collection-grid">
                   {audiusPlaylists.map((playlist, index) => (
-                    <a
+                    <Link
                       key={playlist.id}
                       className="collection-card"
-                      {...linkProps(playlist.externalUrl)}
+                      to={`/audius/playlist/${playlist.id}`}
                     >
                       <div
                         className={`collection-art tone-${index + 1}`}
@@ -579,7 +578,7 @@ export default function SearchPage() {
                       <div className="collection-meta">
                         {playlist.ownerName ?? "Unknown creator"}
                       </div>
-                    </a>
+                    </Link>
                   ))}
                 </div>
               </div>
