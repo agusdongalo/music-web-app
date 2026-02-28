@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { apiFetch } from "../api/client";
 import ArtistHeader from "../components/ArtistHeader";
 import TrackRow from "../components/TrackRow";
@@ -136,10 +136,10 @@ export default function ArtistPage() {
         </div>
         <div className="collection-grid">
           {artist.albums.map((album, index) => (
-            <a
+            <Link
               key={album.id}
               className="collection-card"
-              href={`/album/${album.id}`}
+              to={`/album/${album.id}`}
             >
               <div
                 className={`collection-art tone-${index + 1}`}
@@ -155,7 +155,7 @@ export default function ArtistPage() {
               />
               <div className="collection-title">{album.title}</div>
               <div className="collection-meta">Album</div>
-            </a>
+            </Link>
           ))}
         </div>
       </div>

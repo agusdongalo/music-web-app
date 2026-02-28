@@ -167,7 +167,7 @@ button {
   background: var(--surface);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
-  overflow: hidden;
+  overflow: visible;
   backdrop-filter: blur(20px);
 }
 
@@ -367,7 +367,6 @@ button {
   display: flex;
   align-items: center;
   gap: 14px;
-  flex: 1;
 }
 
 .topbar-nav {
@@ -378,7 +377,7 @@ button {
 
 .search-field {
   flex: 1;
-  max-width: 520px;
+  max-width: 720px;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -421,6 +420,17 @@ button {
   display: flex;
   align-items: center;
   gap: 12px;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.topbar-actions .search-dropdown {
+  flex: 1;
+  max-width: 520px;
+}
+
+.topbar-actions .search-field {
+  max-width: none;
 }
 
 .icon-button {
@@ -581,6 +591,20 @@ button {
   flex-wrap: wrap;
 }
 
+.search-filter-row {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  padding: 4px 0 10px;
+  margin: -4px 0 6px;
+  background: linear-gradient(
+    180deg,
+    rgba(12, 12, 18, 0.98) 0%,
+    rgba(12, 12, 18, 0.85) 100%
+  );
+  backdrop-filter: blur(6px);
+}
+
 .hero-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -672,6 +696,7 @@ button {
   flex-direction: column;
   gap: 10px;
   transition: all 0.2s ease;
+  min-width: 0;
 }
 
 .collection-card:hover {
@@ -700,11 +725,19 @@ button {
 
 .collection-title {
   font-weight: 600;
+  line-height: 1.25;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
 }
 
 .collection-meta {
   font-size: 12px;
   color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .artist-header {
@@ -1105,6 +1138,82 @@ button:disabled {
   border: 1px solid transparent;
 }
 
+.queue-item.is-active {
+  border-color: rgba(255, 31, 183, 0.6);
+  box-shadow: 0 10px 18px rgba(5, 5, 12, 0.35);
+}
+
+.now-toggle {
+  justify-content: flex-start;
+}
+
+.queue-drawer {
+  position: fixed;
+  right: 20px;
+  bottom: 96px;
+  width: min(360px, 92vw);
+  max-height: 60vh;
+  background: var(--surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  box-shadow: 0 20px 36px rgba(4, 4, 10, 0.55);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow: hidden;
+  z-index: 40;
+  backdrop-filter: blur(16px);
+}
+
+.queue-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.queue-drawer-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--text-muted);
+}
+
+.queue-drawer-list {
+  overflow: auto;
+  display: grid;
+  gap: 8px;
+  padding-right: 4px;
+}
+
+.queue-drawer-item {
+  border-radius: 12px;
+  border: 1px solid transparent;
+  background: #141423;
+  padding: 10px 12px;
+  text-align: left;
+  transition: all 0.2s ease;
+}
+
+.queue-drawer-item:hover {
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.queue-drawer-item.is-active {
+  border-color: rgba(255, 31, 183, 0.5);
+  box-shadow: 0 8px 18px rgba(5, 5, 12, 0.35);
+}
+
+.queue-drawer-title {
+  font-weight: 600;
+}
+
+.queue-drawer-artist {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
 .queue-thumb {
   width: 40px;
   height: 40px;
@@ -1454,6 +1563,69 @@ button:disabled {
   text-align: right;
 }
 
+.search-dropdown {
+  position: relative;
+}
+
+.search-dropdown-panel {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  right: 0;
+  background: var(--surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  max-height: 520px;
+  overflow: auto;
+  z-index: 5;
+  box-shadow: 0 18px 32px rgba(4, 4, 10, 0.5);
+}
+
+.search-dropdown-title {
+  margin: 0;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--text-muted);
+}
+
+.search-dropdown-subtitle {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.search-dropdown-block {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.search-dropdown-block + .search-dropdown-block {
+  margin-top: 18px;
+}
+
+.search-dropdown-panel .collection-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.search-dropdown-panel .hero-grid {
+  grid-template-columns: 1fr;
+}
+
+@media (max-width: 720px) {
+  .search-dropdown-panel {
+    position: static;
+    max-height: none;
+    margin-top: 10px;
+  }
+
+  .search-dropdown-panel .collection-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 1200px) {
   .app-shell {
     grid-template-columns: 240px minmax(0, 1fr);
@@ -1558,3 +1730,4 @@ button:disabled {
     display: none;
   }
 }
+

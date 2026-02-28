@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 type AlbumGridItem = {
   id: string;
   title: string;
@@ -13,7 +15,11 @@ export default function AlbumGrid({ albums }: AlbumGridProps) {
   return (
     <div className="album-grid">
       {albums.map((album) => (
-        <a key={album.id} className="album-card" href={`/album/${album.id}`}>
+        <Link
+          key={album.id}
+          className="album-card"
+          to={`/album/${album.id}`}
+        >
           <div className="album-cover">
             {album.coverUrl ? (
               <img src={album.coverUrl} alt={album.title} />
@@ -23,7 +29,7 @@ export default function AlbumGrid({ albums }: AlbumGridProps) {
           </div>
           <div className="album-title">{album.title}</div>
           <div className="album-artist">{album.artistName ?? "Unknown"}</div>
-        </a>
+        </Link>
       ))}
     </div>
   );

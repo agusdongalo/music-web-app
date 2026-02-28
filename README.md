@@ -34,12 +34,11 @@ AUDIUS_APP_NAME="music-app"
 
 The Search page and Home page both pull Audius results and play full tracks.
 
-## Online previews
+## UI notes
 
-For broader catalog search, the app also fetches:
-
-- iTunes 30-second previews
-- MusicBrainz metadata
+- Search uses an in-page dropdown (no page jump), with filters for Songs / Playlists / Artists.
+- Albums are hidden in search results (tracks + artists only).
+- Now Playing panel is wired to the active track and includes a Queue view.
 
 ## Demo account
 

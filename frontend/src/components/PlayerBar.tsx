@@ -1,8 +1,10 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { usePlayerStore } from "../store/playerStore";
 import { formatDuration } from "../utils/format";
+import QueueDrawer from "./QueueDrawer";
 
 export default function PlayerBar() {
+  const [queueOpen, setQueueOpen] = useState(false);
   const {
     currentTrack,
     isPlaying,
@@ -255,7 +257,8 @@ export default function PlayerBar() {
           className="icon-button ghost player-button"
           type="button"
           aria-label="Lyrics"
-          title="Lyrics"
+          title="Lyrics (coming soon)"
+          disabled
         >
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <rect
@@ -294,6 +297,8 @@ export default function PlayerBar() {
           type="button"
           aria-label="Queue"
           title="Queue"
+          aria-pressed={queueOpen}
+          onClick={() => setQueueOpen((prev) => !prev)}
         >
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <line
@@ -329,7 +334,8 @@ export default function PlayerBar() {
           className="icon-button ghost player-button"
           type="button"
           aria-label="Devices"
-          title="Devices"
+          title="Devices (coming soon)"
+          disabled
         >
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <rect
@@ -383,6 +389,7 @@ export default function PlayerBar() {
           />
         </div>
       </div>
+      <QueueDrawer open={queueOpen} onClose={() => setQueueOpen(false)} />
     </footer>
   );
 }

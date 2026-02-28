@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { apiFetch } from "../api/client";
 import TrackRow from "../components/TrackRow";
 import CreatePlaylistModal from "../components/CreatePlaylistModal";
@@ -157,10 +158,10 @@ export default function LibraryPage() {
                   <p className="section-subtitle">No playlists yet.</p>
                 ) : (
                   playlists.map((playlist, index) => (
-                    <a
+                    <Link
                       key={playlist.id}
                       className="collection-card"
-                      href={`/playlist/${playlist.id}`}
+                      to={`/playlist/${playlist.id}`}
                     >
                       <div
                         className={`collection-art tone-${(index % 4) + 1}`}
@@ -178,7 +179,7 @@ export default function LibraryPage() {
                       <div className="collection-meta">
                         {playlist.isPublic ? "Public" : "Private"}
                       </div>
-                    </a>
+                    </Link>
                   ))
                 )}
               </div>
